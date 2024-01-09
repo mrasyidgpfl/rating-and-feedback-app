@@ -1,0 +1,89 @@
+<div class="container" [hidden]="!isReady">
+  <div class="row" style="margin-top:100px">
+    <div class="col" style="text-align: right;">
+      <mat-form-field id="stat">
+        <mat-select placeholder="Select Status" (selectionChange)="applyFilter($event.value)">
+          <mat-option value="true">Active</mat-option>
+          <mat-option value="false">Inactive</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md">
+      <table mat-table [dataSource]="dataSource" class="table-hover"> 
+        <ng-container matColumnDef="assignment_name">
+          <th mat-header-cell *matHeaderCellDef> Assignment Name </th>
+          <td mat-cell *matCellDef="let elem"> <a routerLink="/detailpage">{{elem.assignment_name}}</a> </td>
+        </ng-container>
+        <ng-container matColumnDef="customer_name">
+          <th mat-header-cell *matHeaderCellDef> Customer Name </th>
+          <td mat-cell *matCellDef="let element"> {{element.customer_name}} </td>
+        </ng-container>
+        <ng-container matColumnDef="assignment_rating">
+          <th mat-header-cell *matHeaderCellDef> Customer Rating </th>
+          <td mat-cell *matCellDef="let element"> 
+            <div class="container">
+              <div class="row">
+                <div class="col" [hidden]="!(element.assignment_rating === 0)">
+                  Not yet rated
+                </div>
+                <div class="col-1" [hidden]="!(element.assignment_rating !== 0)">
+                  {{ element.assignment_rating }}
+                </div>
+                <div class="col-6" [hidden]="!(element.assignment_rating !== 0)">
+                  <star-rating style="display:inline-block; text-align:left;" [starType]="'svg'" [readOnly]="true" [rating]="element.assignment_rating"></star-rating>
+                </div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="my_rating">
+          <th mat-header-cell *matHeaderCellDef> My Rating </th>
+          <td mat-cell *matCellDef="let element">
+            <ng-container [ngTemplateOutlet]='element.my_rating == 0 ? showButton : showRating'
+              [ngTemplateOutletContext]="{rating:element.my_rating, project_id:element.project_id,
+              name:element.assignment_name}">
+            </ng-container>
+          </td>
+        </ng-container>
+        <ng-template #showRating let-rating='rating'>
+          <div class="container">
+            <div class="row">
+              <div class="col" [hidden]="!(rating === 'NaN')">
+                Not yet rated
+              </div>
+              <div class="col-1" [hidden]="!(rating !== 'NaN')">
+                {{rating.toFixed(2)}}
+              </div>
+              <div class="col-6" [hidden]="!(rating !== 'NaN')">
+                <star-rating style="display:inline-block; text-align:left;" [starType]="'svg'" [readOnly]="true" [rating]="rating"></star-rating>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template #showButton let-id='project_id' let-nama='name'>
+          <p>Currently hidden for you.</p>
+          <p>Please complete your review first.</p>
+          <a routerLink="/givefeedback/{{id}}/{{nama}}"><button mat-button style="margin-bottom: 15px;background-color: red; color:white">Give Review</button></a>
+        </ng-template>
+        <ng-container matColumnDef="state">
+          <th mat-header-cell *matHeaderCellDef> State </th>
+          <td mat-cell *matCellDef="let element">
+            <mat-chip-list>
+              <div *ngIf="element.state == true">
+                <mat-chip>Active</mat-chip>
+              </div>
+              <div *ngIf="element.state == false">
+                <mat-chip>Inactive</mat-chip>
+              </div>
+            </mat-chip-list>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>

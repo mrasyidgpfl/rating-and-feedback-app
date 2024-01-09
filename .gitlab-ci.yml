@@ -1,0 +1,198 @@
+stages:
+    - build
+    - test
+    - development
+    - staging
+    - production
+
+build-frontend:
+    image: node:10
+    stage: build
+    cache:
+        paths:
+            - node_modules/
+    script:
+        - cd frontend
+        - yarn install
+        - yarn build
+            
+build-backend:
+    image: microsoft/dotnet:2.1-sdk
+    stage: build
+    script:
+        - cd backend
+        - dotnet restore
+        - dotnet build
+
+test-frontend:
+    image: node:10
+    stage: test
+    before_script:
+        - cd frontend
+        - yarn config set cache-folder .yarn
+        - yarn install
+        - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - 
+        - echo "deb http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list
+        - apt-get update
+        - apt-get install google-chrome-stable -y
+    script:
+        - npm run test
+
+test-backend:
+    image: microsoft/dotnet:2.1-sdk
+    stage: test
+    script:
+        - cd backend/PPL.Test
+        - dotnet test /p:CollectCoverage=true /p:Exclude="[xunit*]*"
+
+development-frontend :
+    stage: development
+    image: node:10
+    ##before_script:
+    ##    - BASEDIR=$PWD
+    ##    - apt-get update
+    ##    - apt-get install apt-transport-https lsb-release -y
+    ##    - curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null
+    ##    - export AZ_REPO=$(lsb_release -cs)
+    ##    - echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list
+    ##    - apt-get update
+    ##    - apt-get install azure-cli -y
+    script:
+        - echo "Skipped. There's no dev environment yet."
+    ##    - cd frontend
+    ##    - yarn install
+    ##    - yarn build
+    ##    - cd dist/frontend
+    ##    - az storage blob delete-batch -s "\$web" --account-name ecomfeedback --account-key $AZURE_STORAGE_CONNECTION
+    ##    - az storage blob upload-batch -d "\$web" -s . --account-name ecomfeedback --account-key $AZURE_STORAGE_CONNECTION
+    ##    - echo "Static Website Deployed!!"
+    only:
+        - frontend-dev
+
+development-backend :
+    stage: development
+    image: microsoft/dotnet:2.1-sdk
+    ##before_script:
+    ##    - BASEDIR=$PWD
+    ##    - apt-get update
+    ##    - apt-get install apt-transport-https lsb-release -y
+    ##    - curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null
+    ##    - export AZ_REPO=$(lsb_release -cs)
+    ##    - echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list
+    ##    - apt-get update
+    ##    - apt-get install azure-cli -y
+    script:
+        - echo "Skipped. There's no dev environment yet."
+    ##    - apt-get install zip unzip
+    ##    - az login --service-principal -u $AZURE_APP_ID -p $AZURE_APP_PASSWORD --tenant $AZURE_TENANT > hidden.txt && rm hidden.txt
+    ##    - cd backend/PPL.App
+    ##    - dotnet restore
+    ##    - dotnet build -o bin/output
+    ##    - cd bin/output
+    ##    - zip -r func.zip .
+    ##    - az functionapp deployment source config-zip -g $AZURE_FUNCTIONAPP -n $AZURE_FUNCTIONAPP --src ./func.zip
+    ##    - rm func.zip
+    ##    - az logout
+    ##    - echo "Function App Deployed!!"
+    only:
+        - frontend-dev
+
+staging-frontend :
+    stage: staging
+    image: node:10
+    before_script:
+        - BASEDIR=$PWD
+        - apt-get update
+        - apt-get install apt-transport-https lsb-release -y
+        - curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null
+        - export AZ_REPO=$(lsb_release -cs)
+        - echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list
+        - apt-get update
+        - apt-get install azure-cli -y
+    script:
+        - cd frontend
+        - yarn install
+        - yarn build
+        - cd dist/frontend
+        - az storage blob delete-batch -s "\$web" --account-name ecomfeedback --account-key $AZURE_STORAGE_CONNECTION
+        - az storage blob upload-batch -d "\$web" -s . --account-name ecomfeedback --account-key $AZURE_STORAGE_CONNECTION
+        - echo "Static Website Deployed!!"
+    only:
+        - staging
+
+staging-backend :
+    stage: staging
+    image: microsoft/dotnet:2.1-sdk
+    before_script:
+        - BASEDIR=$PWD
+        - apt-get update
+        - apt-get install apt-transport-https lsb-release -y
+        - curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null
+        - export AZ_REPO=$(lsb_release -cs)
+        - echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list
+        - apt-get update
+        - apt-get install azure-cli -y
+    script:
+        - apt-get install zip unzip
+        - az login --service-principal -u $AZURE_APP_ID -p $AZURE_APP_PASSWORD --tenant $AZURE_TENANT > hidden.txt && rm hidden.txt
+        - cd backend/PPL.App
+        - dotnet restore
+        - dotnet build -o bin/output
+        - cd bin/output
+        - zip -r func.zip .
+        - az functionapp deployment source config-zip -g $AZURE_FUNCTIONAPP -n $AZURE_FUNCTIONAPP --src ./func.zip
+        - rm func.zip
+        - az logout
+        - echo "Function App Deployed!!"
+    only:
+        - staging
+
+production-frontend :
+    stage: production
+    image: node:10
+    before_script:
+        - BASEDIR=$PWD
+        - apt-get update
+        - apt-get install apt-transport-https lsb-release -y
+        - curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null
+        - export AZ_REPO=$(lsb_release -cs)
+        - echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list
+        - apt-get update
+        - apt-get install azure-cli -y
+    script:
+        - cd frontend
+        - yarn install
+        - yarn build --prod
+        - cd dist/frontend
+        - az storage blob delete-batch -s "\$web" --account-name ecomfeedback --account-key $AZURE_STORAGE_CONNECTION
+        - az storage blob upload-batch -d "\$web" -s . --account-name ecomfeedback --account-key $AZURE_STORAGE_CONNECTION
+        - echo "Static Website Deployed!!"
+    only:
+        - master
+
+production-backend :
+    stage: production
+    image: microsoft/dotnet:2.1-sdk
+    before_script:
+        - BASEDIR=$PWD
+        - apt-get update
+        - apt-get install apt-transport-https lsb-release -y
+        - curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null
+        - export AZ_REPO=$(lsb_release -cs)
+        - echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | tee /etc/apt/sources.list.d/azure-cli.list
+        - apt-get update
+        - apt-get install azure-cli -y
+    script:
+        - apt-get install zip unzip
+        - az login --service-principal -u $AZURE_APP_ID -p $AZURE_APP_PASSWORD --tenant $AZURE_TENANT > hidden.txt && rm hidden.txt
+        - cd backend/PPL.App
+        - dotnet restore
+        - dotnet build -o bin/output
+        - cd bin/output
+        - zip -r func.zip .
+        - az functionapp deployment source config-zip -g $AZURE_FUNCTIONAPP -n $AZURE_FUNCTIONAPP --src ./func.zip
+        - rm func.zip
+        - az logout
+        - echo "Function App Deployed!!"
+    only:
+        - master

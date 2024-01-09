@@ -1,0 +1,117 @@
+<div class="container">
+  <div *ngFor="let periode of kembalianKey; let h = index">
+    <div *ngFor="let person of kembalian[periode]; let i = index">
+      <div [hidden]="!(i == currentPersonIndex && h == currentPeriodIndex)">
+        {{ getRatingID() }}
+        <div *ngIf="gagalSend" class="row" style="margin-top:85px">
+          <div class="col" align="center">
+            <div class="alert alert-warning" role="alert">
+              Terdapat sebuah error!
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" align="center" style="margin-top:85px">
+            <h3>Project Name: {{ nama }}</h3>
+          </div>
+        </div>
+        <div class="row" style="margin-top:15px">
+          <div class="col">
+            <h6>For sprint period:</h6>
+            <h4 style="text-align:left">{{ extractDate(kembalianKey[h]) }}</h4>
+          </div>
+          <div class="col">
+            <h5 style="text-align:right">Name : {{ person.split(",")[0] }}</h5>
+          </div>
+        </div>
+        <div class="row" style="margin-top:20px">
+          <div class="col" style="text-align: center">
+            <div *ngIf="(badgepicked != null) && (rating == 6)">
+              <h5 style="text-align:center">Congratulations, You give 6 stars!</h5>
+              <img title="{{ badges[badgepicked].split(',')[0] }}" src="{{ badges[badgepicked].split(',')[1] }}" style="width:100px;" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" style="text-align: center;">
+            <h4>How would you rate your friend?</h4>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" style="text-align: center; margin-bottom: 25px">
+            <fieldset class="rating2">
+              <input type="radio" id="star6" [(ngModel)]="rating" value="6" name="rating{{i}}{{h}}" /><label class="full" for="star6" title="Ultimate - 6 stars"></label>
+              <input type="radio" id="star5" [(ngModel)]="rating" value="5" name="rating{{i}}{{h}}" /><label class="full" for="star5" title="Awesome - 5 stars"></label>
+              <input type="radio" id="star4" [(ngModel)]="rating" value="4" name="rating{{i}}{{h}}" /><label class="full" for="star4" title="Pretty good - 4 stars"></label>
+              <input type="radio" id="star3" [(ngModel)]="rating" value="3" name="rating{{i}}{{h}}" /><label class="full" for="star3" title="Meh - 3 stars"></label>
+              <input type="radio" id="star2" [(ngModel)]="rating" value="2" name="rating{{i}}{{h}}" /><label class="full" for="star2" title="Kinda bad - 2 stars"></label>
+              <input type="radio" id="star1" [(ngModel)]="rating" value="1" name="rating{{i}}{{h}}" /><label class="full" for="star1" title="Sucks big time - 1 star"></label>
+            </fieldset>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-2" style="text-align: center"></div>
+          <div class="col" style="text-align: center">
+            <div [hidden]="!(rating)" style="margin-bottom:20px">
+              <div *ngIf="rating < 6">
+                <h5>What needs to be improved?</h5>
+                <!-- <div class="btn-group-toggle">
+                  <div class="container">
+                    <fieldset class="feedback">
+                      <div class="row">
+                        <div *ngFor="let labelfeedbackKey of labelfeedbackKeys; let j = index">
+                          <div class="col">
+                            <label class="btn btn-primary">
+                              <input type="checkbox"> {{labelfeedback[labelfeedbackKey]}}
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </fieldset>
+                  </div>
+                </div> -->
+                <mat-grid-list cols="4" rowHeight = "70px">
+                  <mat-grid-tile *ngFor="let labelfeedbackKey of labelfeedbackKeys">
+                    <mat-button-toggle (change)="tambahKeFeedback($event.value)" value="{{labelfeedbackKey}}">
+                      {{labelfeedback[labelfeedbackKey]}}
+                    </mat-button-toggle>
+                  </mat-grid-tile>
+                </mat-grid-list>
+              </div>
+              <div *ngIf="rating == 6">
+                <div class="w3-container">
+                  <fieldset class="badge">
+                    <div class="w3-col m4 l2" *ngFor="let badgesKey of badgesKeys">
+                      <input type="radio" [(ngModel)]="badgepicked" name="badge{{i}}{{h}}"
+                             value="{{badgesKey}}" class="each-badge" id="{{badgesKey}}" />
+                      <label class="full" for="{{badgesKey}}" title="{{ badges[badgesKey].split(',')[0] }}">
+                        <img class="gambar-badge" src="{{ badges[badgesKey].split(',')[1] }}" style="width:75px" />
+                      </label>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-2" style="text-align: center"></div>
+        </div>
+        <div class="row">
+          <div class="col" style="text-align: center">
+            <textarea placeholder="Please Give Your Feedback Here.." id="res" [(ngModel)]="comment"
+                      style="resize:none;width:560px;height:80px">
+            </textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" style="text-align: center; margin-top: 10px; margin-bottom:75px;">
+            <button mat-raised-button (click)="postIntoDB()"
+                    matBadgePosition="before" matBadgeColor="black">
+              Submit
+            </button>
+            {{ getStuff() }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

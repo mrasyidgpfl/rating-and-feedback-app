@@ -1,0 +1,110 @@
+<div [hidden]="!isReady" style="margin-top: 80px" id="content">
+  <div class="container">
+    <div class="row">
+      <div class="col-4" style="text-align:center;font-size:15px">
+        <b>{{details[0]}}</b>
+      </div>
+      <div class="col-4" style="text-align:center;font-size:15px">
+        <b>{{details[1]}}</b>
+      </div>
+      <div class="col-4">
+        <div class="container">
+          <div class="row" style="font-size:15px">
+            <b>Customer Average Rating:</b>
+            <div [hidden]="!(details[2] === 0 || details[2] === 'NaN')">
+              <b>&nbsp; Not yet rated</b>
+            </div>
+            <div [hidden]="!(details[2] !== 0 && details[2] !== 'NaN')">
+                  <star-rating [starType]="'svg'" [readOnly]="true" [rating]="details[2]"></star-rating>
+            </div>
+            <div [hidden]="!(details[2] !== 0 && details[2] !== 'NaN')">
+              <a routerLink="/view-report/{{this.projId}}/{{this.idCust}}">
+                <b style="text-align:right;font-size:15px"> {{details[2]}} </b>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    <div class="row">
+      <div class="col-12" style="text-align:center;margin-bottom:15px;margin-top:5px" >
+        <fusioncharts
+                      width="700"
+                      height="400"
+                      type="Column2d"
+                      [dataSource]="dataSourceStatistik">
+        </fusioncharts>
+      </div>
+    </div>
+    <div class="row" style="margin-bottom:125px">
+      <div class="col-12">
+        <table mat-table [dataSource]="dataSource" style="margin-bottom:30px;">
+          <!-- Position Column -->
+          <ng-container matColumnDef="position">
+            <th mat-header-cell *matHeaderCellDef> Period </th>
+            <td mat-cell *matCellDef="let element" style="width:200px"> {{element.period}} </td>
+          </ng-container>
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> Name </th>
+            <td mat-cell *matCellDef="let element" style="width:200px">
+              <div *ngIf="element.name.length > 0">
+                <div *ngFor="let name of element.name">
+                  <div *ngIf="name !== {}">
+                    <a routerLink="/detailpage/P1/{{ element.pidDict[name] }}">{{ name }}</a>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="element.name.length === 0">
+                <b>No one rated yet</b>
+              </div>
+            </td>
+          </ng-container>
+          <!-- Weight Column -->
+          <ng-container matColumnDef="weight" style="flex:0 0 200px;">
+            <th mat-header-cell *matHeaderCellDef style="width:200px"> Rating </th>
+            <td mat-cell *matCellDef="let element">
+              <div class="container">
+                <div *ngIf="element.rating.length > 0">
+                  <div *ngFor="let rate of element.rating" class="row">
+                    <div class="col-3">
+                      <star-rating [starType]="'svg'" [readOnly]="true" [rating]="rate"></star-rating>
+                    </div>
+                    <div class="col-3">
+                      <div align="right">
+                        <div *ngIf="rate !== 0">
+                          {{ rate }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="element.rating.length === 0">
+                  <b>Not one rated yet</b>
+                </div>
+              </div>
+            </td>         
+          </ng-container>
+          <!-- Symbol Column -->
+          <ng-container matColumnDef="symbol">
+            <th mat-header-cell *matHeaderCellDef> Most Feedback </th>
+            <td mat-cell *matCellDef="let element" style="width:200px">
+              <div *ngIf="element.most_feedback !== ''">
+                <div *ngFor="let iter of element.most_feedback">
+                  {{iter}}
+                 </div>
+              </div>
+              <div *ngIf="element.most_feedback === ''">
+                <b>No feedback</b>
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 15]" showFirstLastButtons></mat-paginator>
+      </div>
+    </div>
+  </div>
+</div>

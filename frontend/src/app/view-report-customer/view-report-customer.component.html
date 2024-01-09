@@ -1,0 +1,80 @@
+<div class="container" *ngIf="!kosong" style="margin-top: 80px" id="content">
+  <div class = "row">
+      <div>
+        <h4>{{ namaProject }} - {{ namaCust }}</h4>
+      </div>
+  </div>
+  <div class="row">
+    <div class="col-12" style="text-align:center;margin-bottom:15px;margin-top:5px" >
+      <fusioncharts width="700"
+                    height="400"
+                    type="Column2d"
+                    [dataSource]="dataSourceStatistik">
+      </fusioncharts>
+    </div>
+  </div>
+  <div class="row" style="margin-bottom:125px">
+    <div class="col-12">
+      <table mat-table [hidden] = "!isReady" [dataSource]="dataSource" style="margin-bottom:30px;">
+        <!-- Position Column -->
+        <ng-container matColumnDef="period">
+          <th mat-header-cell *matHeaderCellDef> Period </th>
+          <td mat-cell *matCellDef="let element" style="width:200px"> {{element.period}} </td>
+        </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="daterange">
+          <th mat-header-cell *matHeaderCellDef> Date Range </th>
+          <td mat-cell *matCellDef="let element" style="width:200px">
+            {{element.daterange}}
+          </td>
+        </ng-container>
+        <!-- Weight Column -->
+        <ng-container matColumnDef="name" style="flex:0 0 200px;">
+          <th mat-header-cell *matHeaderCellDef style="width:200px"> Name </th>
+          <td mat-cell *matCellDef="let element" style="width:200px">
+            {{element.name}}
+          </td>
+        </ng-container>
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="badge">
+          <th mat-header-cell *matHeaderCellDef> Badge </th>
+          <td mat-cell *matCellDef="let element" style="width:200px">
+            <div *ngIf="element.badge !== ''">
+              <img src="{{element.badge.link}}" style="width:60px;height: 75px" title="{{element.badge.tooltip}}"/>
+            </div>
+            <div *ngIf="element.badge === ''">
+              <b>No Badge</b>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="feedbacks">
+          <th mat-header-cell *matHeaderCellDef> Feedback </th>
+          <td mat-cell *matCellDef="let element" style="width:200px">
+            <div *ngIf="element.feedbacks.length !== 0">
+              <div *ngFor="let item of element.feedbacks">
+                {{item}}
+              </div>
+            </div>
+            <div *ngIf="element.feedbacks.length === 0 || element.badge === {}">
+              <b>No feedback</b>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="comment">
+          <th mat-header-cell *matHeaderCellDef> Comment </th>
+          <td mat-cell *matCellDef="let element" style="width:200px">
+            <div *ngIf="element.comment !== ''">
+              {{element.comment}}
+            </div>
+            <div *ngIf="element.comment === ''">
+              <b>No comment</b>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 15]" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>

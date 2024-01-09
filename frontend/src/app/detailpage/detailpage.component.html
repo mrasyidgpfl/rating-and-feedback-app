@@ -1,0 +1,92 @@
+<div *ngIf="isReady" class="box container" style="margin-top:100px;">
+  <div>
+    <div id="rating" class="rating-container">
+      <div style="float: left; padding-left: 30px">
+        <h4>{{ projectName }}</h4>
+        <h6>{{ clientName }}</h6>
+      </div>
+      <div style="float: left; padding-left: 30px">
+      <star-rating direction="ltr" labelPosition="top" labelText="My Average Rating" [numOfStars]="6" [rating]="myRating" [readOnly]="true" [showHalfStars]="true" staticColor="ok"></star-rating>
+      </div>
+    </div>
+
+    <!--<div id="badges" class="badge-container" style="float: right; padding: 5px 50px">
+      <span class="notificationsBadge" [(matBadge)]="myRating" matBadgeColor="warn" matBadgeSize="medium" matBadgePosition="below after"><img src="https://image.flaticon.com/icons/svg/1490/1490549.svg" hspace="5" style="width:50px"/></span>
+      <span class="notificationsBadge" matBadge="10" matBadgeColor="warn" matBadgeSize="medium" matBadgePosition="below after"><img src="https://image.flaticon.com/icons/svg/1490/1490557.svg" hspace="5" style="width:50px"/></span>
+      <span class="notificationsBadge" matBadge="10" matBadgeColor="warn" matBadgeSize="medium" matBadgePosition="below after"><img src="https://image.flaticon.com/icons/svg/1490/1490562.svg" hspace="5" style="width:50px"/></span>
+      <span class="notificationsBadge" matBadge="10" matBadgeColor="warn" matBadgeSize="medium" matBadgePosition="below after"><img src="https://image.flaticon.com/icons/svg/1490/1490580.svg" hspace="5" style="width:50px"/></span>
+      <span class="notificationsBadge" matBadge="10" matBadgeColor="warn" matBadgeSize="medium" matBadgePosition="below after"><img src="https://image.flaticon.com/icons/svg/1490/1490576.svg" hspace="5" style="width:50px"/></span>
+      <span class="notificationsBadge" matBadge="10" matBadgeColor="warn" matBadgeSize="medium" matBadgePosition="below after"><img src="https://image.flaticon.com/icons/svg/1490/1490584.svg" hspace="5" style="width:50px"/></span>
+    </div>-->
+
+    <div id="badges" class="badge-container" style="float: right; padding: 5px" *ngFor="let item of badgeSource">
+      <span class="notificationsBadge" [(matBadge)]="item[1]" matBadgeColor="warn" matBadgeSize="medium" matBadgePosition="below after">
+        <div *ngIf="item[1];else gray"><img [(src)]="item[0]" hspace="5" style="width:50px"/></div>
+        <ng-template #gray><img [(src)]="item[0]" hspace="5" style="width:50px;filter:grayscale(100%)"/></ng-template>
+      </span>
+    </div>
+  </div>
+</div>
+
+<div [hidden]="!isReady" class="box container" style="margin-top:100px;margin-bottom: 245px">
+  <div class="row">
+    <div class="col-md">
+      <table mat-table [dataSource]="dataSourceFinal" class="table-hover">
+        <!-- Position Column -->
+        <ng-container matColumnDef="position">
+          <th mat-header-cell *matHeaderCellDef> Period Name </th>
+          <td mat-cell *matCellDef="let element"> 
+            <span style="margin-right: 25px;">{{element.name}}</span>
+            <button mat-button (click)="displayModal(element.feedback_comment)">Detail</button> 
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Date Range </th>
+          <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="weight">
+          <th mat-header-cell *matHeaderCellDef> Rating </th>
+          <td mat-cell *matCellDef="let element">
+            <div *ngIf="element.isCompleted; else notComplete">
+              {{element.rating}} <font color="#00CECE" style="margin:0px 5px 0px 5px;">{{ element.ratingNum }}</font>
+            </div>
+            <ng-template #notComplete>
+              {{element.rating}} <font color="#FF0000" style="margin:0px 5px 0px 5px;">{{ element.ratingNum }}</font>
+            </ng-template>
+          </td>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="symbol">
+          <th mat-header-cell *matHeaderCellDef> Feedback </th>
+          <td mat-cell *matCellDef="let element"> <div *ngIf="element.feedback">
+            <div style="float : left; padding:5px 24px 10px 0px;" *ngFor="let feedback of element.feedback.split(';'); let i = index">
+                <mat-chip-list> 
+                  <div ng-if="parseInt(element.progressBar.split(';')[i]) < 5; else moreThan5">
+                    <mat-chip class="feedback-less-than-5"> {{ feedback }} | {{ element.progressBar.split(';')[i] }} </mat-chip> 
+                  </div>
+                  <ng-template #moreThan5>
+                      <mat-chip class="feedback-more-than-5"> {{ feedback }} | {{ element.progressBar.split(';')[i] }} </mat-chip> 
+                  </ng-template>
+                </mat-chip-list>
+              </div>
+            </div> 
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!isReady" class="container">
+  <br><br><br>
+  <p>Loading...</p>
+</div>

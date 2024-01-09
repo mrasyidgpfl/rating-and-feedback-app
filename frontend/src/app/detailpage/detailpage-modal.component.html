@@ -1,0 +1,14 @@
+<div mat-dialog-content>
+    <div *ngIf="data.length > 0">
+      <p>Berikut merupakan komentar pada periode ini:</p>
+      <ul>
+        <li *ngFor="let element of data">{{ element }}</li>
+      </ul>
+    </div>
+    <div *ngIf="data.length == 0">
+      <p>Anda tidak memiliki komentar pada periode ini</p>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Tutup</button>
+</div>

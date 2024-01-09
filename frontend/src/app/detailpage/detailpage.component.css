@@ -1,0 +1,35 @@
+.mat-progress-bar {
+    width: 50%;
+    white-space: nowrap;
+}
+
+table {
+  width: 100%;
+}
+
+.box {
+    width: 100%;
+    min-height: 1px;
+}
+
+.notificationsBadge {
+  width: 50px;
+  height: 40px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  float: left;
+  margin: 0px 5px 0px 5px;
+}
+
+.feedback-more-than-5 {
+  background : white;
+  border-style: solid;
+  border-color : red;
+}
+
+.feedback-less-than-5 {
+  background : white;
+  border-style: solid;
+  border-color : orange;
+}

@@ -1,0 +1,60 @@
+/* Application-wide Styles */
+h1 {
+  color: #369;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 250%;
+}
+h2, h3 {
+  color: #369;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: lighter;
+}
+body, input[type="text"], button {
+  color: #888;
+  font-family: Cambria, Georgia;
+}
+    
+.badge {
+  visibility: hidden;
+}
+
+.gambar-badge{
+  visibility: visible;
+  cursor: pointer;
+  margin-right: 10px;
+}
+    
+.rating2 { 
+  border: none;
+  display:inline-block;
+}
+
+.rating2 > input { display: none; } 
+.rating2 > label:before { 
+  margin: 5px;
+  font-size: 3.8em;
+  font-family: FontAwesome;
+  display: inline-block;
+  content: "\f005";
+}
+
+.rating2 > .half:before { 
+  content: "\f089";
+  position: absolute;
+}
+
+.rating2 > label { 
+  color: #ddd; 
+  float: right;
+}
+
+/***** CSS Magic to Highlight Stars on Hover *****/
+
+.rating2 > input:checked ~ label, /* show gold star when clicked */
+.rating2:not(:checked) > label:hover, /* hover current star */
+.rating2:not(:checked) > label:hover ~ label { color: #FFD700;  } /* hover previous stars in list */
+
+.rating2 > input:checked + label:hover, /* hover current star when changing rating2 */
+.rating2 > input:checked ~ label:hover,
+.rating2 > label:hover ~ input:checked ~ label, /* lighten current selection */
+.rating2 > input:checked ~ label:hover ~ label { color: #FFED85;  } 
